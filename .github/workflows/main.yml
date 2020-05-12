@@ -1,0 +1,27 @@
+name: GitHub Pages action
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install React Package
+        uses: borales/actions-yarn@v2.0.0
+
+      - name: Building React App
+        if: ${{ success() }}
+        run: yarn build
+
+      - name: Deploy React App
+        if: ${{ success() }}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
+          commit_message: ${{ github.event.head_commit.message }}
